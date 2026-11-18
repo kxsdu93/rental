@@ -27,7 +27,8 @@ def run(command: list[str], *, cwd: Path = ROOT) -> None:
 
 def gradle_command() -> list[str]:
     if os.name == "nt":
-        return ["cmd", "/c", "gradlew.bat"]
+        # ".\" explicite : sinon cmd ne cherche pas toujours dans le dossier courant
+        return ["cmd", "/c", ".\\gradlew.bat"]
     return ["./gradlew"]
 
 
@@ -42,6 +43,29 @@ def test_python() -> None:
 def test() -> None:
     test_java()
     test_python()
+
+
+def lint_java() -> None:
+    run([*gradle_command(), "checkstyleMain", "checkstyleTest"], cwd=CAR_SERVICE)
+
+
+def lint_python() -> None:
+    run([sys.executable, "-m", "ruff", "check", "app", "tests"], cwd=PRICING_SERVICE)
+    run(
+        [sys.executable, "-m", "ruff", "format", "--check", "app", "tests"],
+        cwd=PRICING_SERVICE,
+    )
+
+
+def lint() -> None:
+    lint_java()
+    lint_python()
+
+
+def verify() -> None:
+    # s'arrete au premier echec car run() utilise check=True
+    test()
+    lint()
 
 
 def compose_up() -> None:
@@ -121,6 +145,10 @@ def main() -> int:
             "test",
             "test-java",
             "test-python",
+            "lint",
+            "lint-java",
+            "lint-python",
+            "verify",
             "compose-up",
             "compose-down",
             "smoke",
@@ -133,6 +161,10 @@ def main() -> int:
         "test": test,
         "test-java": test_java,
         "test-python": test_python,
+        "lint": lint,
+        "lint-java": lint_java,
+        "lint-python": lint_python,
+        "verify": verify,
         "compose-up": compose_up,
         "compose-down": compose_down,
         "smoke": smoke,

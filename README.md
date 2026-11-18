@@ -66,6 +66,15 @@ Cette commande exécute les tests Gradle puis les tests Pytest.
 Pour diagnostiquer séparément un service, utiliser `test-java` ou
 `test-python` à la place de `test`.
 
+Pour lancer les tests puis la qualité (Checkstyle et Ruff) comme dans la CI :
+
+```bash
+python scripts/course.py verify
+```
+
+La commande s'arrête au premier échec. On peut aussi lancer `lint`,
+`lint-java` ou `lint-python` seuls.
+
 ## Exécution avec Docker Compose
 
 ```bash
