@@ -27,7 +27,8 @@ def run(command: list[str], *, cwd: Path = ROOT) -> None:
 
 def gradle_command() -> list[str]:
     if os.name == "nt":
-        return ["cmd", "/c", "gradlew.bat"]
+        # ".\" explicite : sinon cmd ne cherche pas toujours dans le dossier courant
+        return ["cmd", "/c", ".\\gradlew.bat"]
     return ["./gradlew"]
 
 
